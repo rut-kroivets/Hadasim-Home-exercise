@@ -92,7 +92,7 @@ const CoronaSummary = () => {
         <div>
             <h2>Active Patients in the Last Month</h2>
             <Line data={userDataChart} style={{ width: '60vw', height: '40vh' }} />
-            <h2>The number of patients who do not vaccinate at all : {immunesMember}</h2>   
+            <h2>The number of members who do not vaccinate at all : {immunesMember}</h2>   
         </div>
     );
 };
