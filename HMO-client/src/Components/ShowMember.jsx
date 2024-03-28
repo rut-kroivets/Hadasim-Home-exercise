@@ -56,7 +56,7 @@ const ShowMember = ({ }) => {
     };
     const closeEdit = async () => {
         setOpenEdit(false);
-        await new Promise(resolve => setTimeout(resolve, 50)); // Wait for a short delay
+        await new Promise(resolve => setTimeout(resolve, 100)); // Wait for a short delay
         window.location.reload();//Reloud the page to save the changes
     }
     
@@ -80,7 +80,7 @@ const ShowMember = ({ }) => {
         }
         VaccinationMobx.addVaccination(vac);
         setOpenAddVec(false);
-        await new Promise(resolve => setTimeout(resolve, 50)); // Wait for a short delay
+        await new Promise(resolve => setTimeout(resolve, 100)); // Wait for a short delay
         window.location.reload();//Reloud the page to save the changes
     }
     }

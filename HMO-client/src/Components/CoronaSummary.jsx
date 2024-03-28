@@ -1,139 +1,105 @@
-// // Import necessary dependencies
-// import React, { useEffect, useState } from 'react';
-// import { Line } from 'react-chartjs-2';
-// import Chart from 'chart.js/auto'; // Import Chart.js auto mode to automatically register components
-
-// const CoronaSummary = () => {
-//     const [activePatientsData, setActivePatientsData] = useState([]);
-
-//     useEffect(() => {
-//         const fetchActivePatientsData = async () => {
-//             try {
-//                 // Fetch data for active patients from the API
-//                 const data = await MemberMobx.getMember();
-//                 const activeMembers = data.filter(m => m.startOfIll !== "");
-
-//                 // Process data to calculate active patients each day in the last month
-//                 const activePatientsLastMonth = calculateActivePatientsLastMonth(activeMembers);
-
-//                 // Update state with the calculated data
-//                 setActivePatientsData(activePatientsLastMonth);
-//             } catch (error) {
-//                 console.error('Error fetching active patients data:', error);
-//             }
-//         };
-
-//         fetchActivePatientsData();
-//     }, []);
-
-//     const calculateActivePatientsLastMonth = (data) => {
-//         const currentDate = new Date();
-//         const lastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
-
-//         // Filter active members whose startOfIll falls within the last month
-//         const activeMembersLastMonth = data.filter(m => {
-//             // Split the string into year, month, and day parts
-//             const [year, month, day] = startOfIll.split('.');
-
-//             // Create a new Date object using the extracted parts
-//             const startOfIllDate = new Date(year, month -1, day);
-//             // const startOfIllDate = new Date(m.startOfIll);
-//             return startOfIllDate >= lastMonth && startOfIllDate <= currentDate;
-//         });
-
-//         // Count active patients for each day in the last month
-//         const activePatientsLastMonth = [];
-//         for (let date = new Date(lastMonth); date <= currentDate; date.setDate(date.getDate() + 1)) {
-//             const dateString = date.toISOString().split('T')[0];
-//             const activePatients = activeMembersLastMonth.filter(m => m.startOfIll.split(' ')[0] === dateString).length;
-//             activePatientsLastMonth.push({ date: dateString, activePatients: activePatients });
-//         }
-
-//         return activePatientsLastMonth;
-//     };
-
-//     // Prepare data for chart
-//     const chartData = {
-//         labels: activePatientsData.map((item) => item.date),
-//         datasets: [
-//             {
-//                 label: 'Active Patients',
-//                 data: activePatientsData.map((item) => item.activePatients),
-//                 fill: false,
-//                 borderColor: 'rgb(75, 192, 192)',
-//                 tension: 0.1,
-//             },
-//         ],
-//     };
-
-//     return (
-//         <div>
-//             <h2>Active Patients in the Last Month</h2>
-//             <Line data={chartData} />
-//         </div>
-//     );
-// };
-
-// export default CoronaSummary;
 import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
+import MemberMobx from '../mobx/MemberMobx';
+import { Chart as ChartJS } from 'chart.js/auto'
 
 const CoronaSummary = () => {
-    const [chartData, setChartData] = useState(null);
 
+    const [dataChart, setDataChart] = useState();
+    const[immunesMember,setImmunesMember]= useState(0);
     useEffect(() => {
-        // Fetch data and prepare chart data
         const fetchDataAndPrepareChartData = async () => {
             try {
-                // Fetch data for active patients from the API or from local data
-                const activePatientsData = await fetchActivePatientsData(); // Implement this function to fetch data
-
-                // Prepare chart data
-                const preparedChartData = prepareChartData(activePatientsData); // Implement this function to prepare data
-
-                // Set the prepared chart data to state
-                setChartData(preparedChartData);
+                const PatientsData = await MemberMobx.getMember();
+                const activePatientsData = PatientsData.filter(m => m.startOfIll !== "");
+                if (activePatientsData.length === 0) {
+                    console.log("No active patients data available.");
+                    return; // Return early if no active patients data
+                }
+                prepareChartData(activePatientsData);
+                const immunes=PatientsData.filter(p=>p.vaccinations.length==0)
+                setImmunesMember(immunes.length);
+                console.log(immunes.length)
             } catch (error) {
                 console.error('Error fetching active patients data:', error);
             }
         };
-
         fetchDataAndPrepareChartData();
     }, []);
 
-    // Function to prepare chart data based on the provided logic
     const prepareChartData = (data) => {
+
         const currentDate = new Date();
-        const lastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+        const lastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+        const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
         // Filter active members whose startOfIll falls within the last month
         const activeMembersLastMonth = data.filter(m => {
-            // Split the string into year, month, and day parts
-            const [year, month, day] = startOfIll.split('.');
-
+            // Check if the member object has the required properties
+            if (!m.startOfIll || !m.endOfIll) {
+                return false;
+            }
+            // Split the string into day, month, and year parts
+            const [day, month, year] = m.startOfIll.split('.');
             // Create a new Date object using the extracted parts
-            const startOfIllDate = new Date(year, month -1, day);
-            // const startOfIllDate = new Date(m.startOfIll);
+            const startOfIllDate = new Date(year, month - 1, day);
+            // Split the string into day, month, and year parts
+            const [day1, month1, year1] = m.endOfIll.split('.');
+            // Create a new Date object using the extracted parts
+            const endOfIllDate = new Date(year1, month1 - 1, day1);
             return startOfIllDate >= lastMonth && startOfIllDate <= currentDate;
         });
 
         // Count active patients for each day in the last month
-        const activePatientsLastMonth = [];
-        for (let date = new Date(lastMonth); date <= currentDate; date.setDate(date.getDate() + 1)) {
-            const dateString = date.toISOString().split('T')[0];
-            const activePatients = activeMembersLastMonth.filter(m => m.startOfIll.split(' ')[0] === dateString).length;
-            activePatientsLastMonth.push({ date: dateString, activePatients: activePatients });
-        }
-
-        return activePatientsLastMonth;
+        activeMembersLastMonth.forEach(m => {
+            // Split the string into day, month, and year parts
+            const [day, month, year] = m.startOfIll.split('.');
+            // Create a new Date object using the extracted parts
+            const startOfIllDate = new Date(year, month - 1, day);
+            // Split the string into day, month, and year parts
+            const [day1, month1, year1] = m.endOfIll.split('.');
+            // Create a new Date object using the extracted parts
+            const endOfIllDate = new Date(year1, month1 - 1, day1);
+            const arr = Array.from({ length: 31 }, () => 0);
+            for (let i = 0; i < currentDate.getDate() - lastMonth.getDate(); i++) {
+                const startDay = Math.max(startOfIllDate.getDate(), firstDayOfMonth.getDate());
+                const endDay = Math.min(endOfIllDate.getDate(), lastDayOfMonth.getDate());
+                console.log(startDay, "---", endDay);
+                for (let day = startDay; day <= endDay; day++) {
+                    arr[day - 1]++;
+                }
+            }
+            setDataChart(arr);
+        });
     };
+//     const r=[3,4,5,6,7]
+// console.log(dataChart)
+// console.log(r)
+    let days = Array.from({ length: 31 }, (_, index) => index + 1);
+    const [userDataChart, setUaerDataChart] = useState(
+        {
+            labels: days.map(x=>x),
+            datasets: [{
+                label: "Users sick",
+                data: dataChart,                
+            }]
+        }
+    );
 
     return (
         <div>
             <h2>Active Patients in the Last Month</h2>
-            {chartData && <Line data={chartData} />}
+            <Line data={userDataChart} style={{ width: '60vw', height: '40vh' }} />
+            <h2>Num of patients not immunes: {immunesMember}</h2>
+
+            
         </div>
     );
 };
-
 export default CoronaSummary;
+
+
+
+
