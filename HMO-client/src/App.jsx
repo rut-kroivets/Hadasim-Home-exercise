@@ -15,7 +15,7 @@ function App() {
           <Routes>
             <Route path="/" element={<AllMembers />} ></Route>
             <Route path="/member" element={<ShowMember />}></Route>
-            <Route path="/graph" element={<CoronaSummary />}></Route>
+            <Route path="/summary" element={<CoronaSummary />}></Route>
           </Routes>
           <Outlet />
         </BrowserRouter>
