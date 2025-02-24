@@ -21,6 +21,9 @@
 בלחיצה על כפתור העריכה יפתח המסך:
 ![צילום מסך 2024-03-27 234340](https://github.com/rut-kroivets/Hadasim-Home-exercise/assets/149902635/20f03a3e-4bca-4efb-9e9f-46c7473550bb)
 
+![image](https://github.com/user-attachments/assets/b08b55a9-9dc0-4524-bd41-43d610e9f960)
+
+
 
 
 
