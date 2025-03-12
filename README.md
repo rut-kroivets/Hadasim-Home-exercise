@@ -34,6 +34,10 @@ def func(path_list: list, path: str) -> int:
 
 func = lambda dic : {dic[x] : x for x in dic}
 
+def func2(lst: list) ->list:
+    lst.sort()
+    return [lst[x] for x in range(len(lst)) if lst[x] != lst[x-1]]
+
 
 
 
