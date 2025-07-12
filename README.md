@@ -21,23 +21,6 @@
 בלחיצה על כפתור העריכה יפתח המסך:
 ![צילום מסך 2024-03-27 234340](https://github.com/rut-kroivets/Hadasim-Home-exercise/assets/149902635/20f03a3e-4bca-4efb-9e9f-46c7473550bb)
 
-def func(path_list: list, path: str) -> int:
-    count: int = path.count('/')
-    lst: list = path.split('/')
-    def_str: str = ''
-    p_list = [x.replace('/','') for x in path_list]
-    for x in lst:
-        if def_str in p_list:
-            count -= 1
-        def_str = def_str + x
-    return count
-
-func = lambda dic : {dic[x] : x for x in dic}
-
-def func2(lst: list) ->list:
-    lst.sort()
-    return [lst[x] for x in range(len(lst)) if lst[x] != lst[x-1]]
-
 
 
 
